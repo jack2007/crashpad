@@ -16,6 +16,8 @@ import("../../build/crashpad_buildconfig.gni")
 
 if (crashpad_is_in_chromium || crashpad_is_in_fuchsia || crashpad_is_in_dart) {
   zlib_source = "external"
+} else if (crashpad_is_standalone && crashpad_is_linux) {
+  zlib_source = "embedded"
 } else if (!crashpad_is_win && !crashpad_is_fuchsia) {
   zlib_source = "system"
 } else if (crashpad_is_standalone) {
@@ -63,6 +65,8 @@ if (zlib_source == "external") {
     sources = [
       "$zlib_dir/adler32.c",
       "$zlib_dir/compress.c",
+      "$zlib_dir/cpu_features.c",
+      "$zlib_dir/cpu_features.h",
       "$zlib_dir/crc32.c",
       "$zlib_dir/crc32.h",
       "$zlib_dir/deflate.c",
@@ -108,6 +112,7 @@ if (zlib_source == "external") {
         "HAVE_HIDDEN",
         "HAVE_UNISTD_H",
       ]
+      cflags += [ "-Wno-deprecated-non-prototype" ]
     }
 
     if (crashpad_is_fuchsia) {
@@ -125,7 +130,14 @@ if (zlib_source == "external") {
       sources += [ "$zlib_dir/chromeconf.h" ]
 
       if (current_cpu == "x86" || current_cpu == "x64") {
-        sources += [ "$zlib_dir/crc_folding.c" ]
+        sources += [
+          "$zlib_dir/crc_folding.c",
+          "$zlib_dir/fill_window_sse.c",
+        ]
+        defines += [
+          "DEFLATE_FILL_WINDOW_SSE2",
+          "X86_NOT_WINDOWS",
+        ]
         if (!crashpad_is_win || crashpad_is_clang) {
           cflags += [
             "-msse4.2",
@@ -135,6 +147,9 @@ if (zlib_source == "external") {
         if (crashpad_is_clang) {
           cflags += [ "-Wno-incompatible-pointer-types" ]
         }
+      } else if (crashpad_is_linux &&
+                 (current_cpu == "arm" || current_cpu == "arm64")) {
+        defines += [ "ARMV8_OS_LINUX" ]
       }
     }
   }

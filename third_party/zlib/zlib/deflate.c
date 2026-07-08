@@ -2063,7 +2063,7 @@ local block_state deflate_slow(s, flush)
             uInt max_insert = s->strstart + s->lookahead - MIN_MATCH;
             /* Do not insert strings in hash table beyond this. */
 
-            if (s->prev_match == -1) {
+            if (s->prev_match == (IPos)-1) {
                 /* The window has slid one byte past the previous match,
                  * so the first byte cannot be compared. */
                 check_match(s, s->strstart, s->prev_match+1, s->prev_length-1);

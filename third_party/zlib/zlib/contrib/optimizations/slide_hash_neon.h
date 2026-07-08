@@ -51,8 +51,9 @@ inline static void ZLIB_INTERNAL neon_slide_hash(Posf *head, Posf *prev,
      * 2. hash table size is multiple of 32 bytes.
      * #1 should be true as Pos is defined as "ush"
      * #2 should be true as hash_bits are greater than 7
-     */
+    */
     const size_t size = hash_size * sizeof(head[0]);
+    (void)size;
     Assert(sizeof(Pos) == 2, "Wrong Pos size.");
     Assert((size % sizeof(uint16x8_t) * 2) == 0, "Hash table size error.");
 
