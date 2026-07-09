@@ -112,7 +112,6 @@ if (zlib_source == "external") {
         "HAVE_HIDDEN",
         "HAVE_UNISTD_H",
       ]
-      cflags += [ "-Wno-deprecated-non-prototype" ]
     }
 
     if (crashpad_is_fuchsia) {

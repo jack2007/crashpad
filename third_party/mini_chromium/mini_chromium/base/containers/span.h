@@ -1326,7 +1326,7 @@ constexpr span<uint8_t, sizeof(T)> byte_span_from_ref(
 template <size_t N>
 constexpr span<const char, N - 1> span_from_cstring(
     const char (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
-  return span(lit).template first<N - 1>();
+  return span<const char, N>(lit).template first<N - 1>();
 }
 
 // Converts a string literal (such as `"hello"`) to a span of `uint8_t` while
@@ -1344,7 +1344,7 @@ constexpr span<const char, N - 1> span_from_cstring(
 template <size_t N>
 constexpr span<const uint8_t, N - 1> byte_span_from_cstring(
     const char (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
-  return as_bytes(span(lit).template first<N - 1>());
+  return as_bytes(span<const char, N>(lit).template first<N - 1>());
 }
 
 // Convenience function for converting an object which is itself convertible
